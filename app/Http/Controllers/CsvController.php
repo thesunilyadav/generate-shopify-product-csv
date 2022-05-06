@@ -48,7 +48,9 @@ class CsvController extends Controller
             "Body (HTML)",
             "Vendor",
             "Standardized Product Type",
+            "Tags",
             "Published",
+
             "Option1 Name",
             "Option1 Value",
             "Option2 Name",
@@ -56,76 +58,112 @@ class CsvController extends Controller
             "Option3 Name",
             "Option3 Value",
 
+            "Variant SKU",
+            "Variant Grams",
+            'Variant Weight Unit',
+            'Variant Inventory Tracker',
             'Variant Inventory Qty',
-            
+            'Variant Inventory Policy',
             'Variant Fulfillment Service',
-
             'Variant Price',
             'Variant Compare At Price',
+            'Variant Requires Shipping',
+            'Variant Taxable',
 
             "Image Src",
             "Image Position",
+            "Image Alt Text",
+
             "Status"
         ]);
 
+        $numberOfProduct = 1;
+
+        $StandardizedProductType = [ "Arts & Entertainment", "Baby & Toddler", "Cameras & Optics", "Apparel & Accessories", "Electronics", "Luggage & Bags", "Office Supplies", "Religious & Ceremonial", "Mature"];
+
+        $option1 = "Color";
+        $option1vals = ["Large", "Small", "Medium"];
+
+        $option2 = "Size";
+        $option2vals = ["Red", "Green", "Black", "White"];
+
+        $option3 = "Material";
+        $option3vals = ["Plastic", "Rubber", "Metal"];
+
         //adding the data from the array
-        for($i=0; $i<10; $i++) {
+        for($i=0; $i<$numberOfProduct; $i++) {
 
             $title = $faker->realText(50);
             $_handle = Str::slug($title);
             $desc = $faker->text(200);
             $vendor = $faker->word;
             
-            $StandardizedProductType = [ "Arts & Entertainment", "Baby & Toddler", "Cameras & Optics", "Apparel & Accessories", "Electronics", "Luggage & Bags", "Office Supplies", "Religious & Ceremonial", "Mature"];
+            
 
             $type = $StandardizedProductType[$rand_keys = array_rand($StandardizedProductType,1)];
 
             $published = true;
             
-            $option1 = "Color";
-            $optin1vals = ["Large", "Small", "Medium", "Extra Small", "Extra Large"];
-            $option1val = $optin1vals[array_rand($optin1vals,1)];
             
-            $option2 = "Size";
-            $optin2vals = ["Red", "Green", "Blue", "Pink", "Yellow"];
-            $option2val = $optin2vals[array_rand($optin2vals,1)];
+            $nOfoption1 = mt_rand(1,3);
+            shuffle( $option1vals );
+            for($j=0;$j<$nOfoption1;$j++){
+                
+                $nOfoption2 = mt_rand(1,4);
+                shuffle( $option2vals );
+
+                for($k=0;$k<$nOfoption2;$k++){
+                    
+                    
+                    $nOfoption3 = mt_rand(1,3);
+                    shuffle( $option3vals );
+
+                    for($m=0;$m<$nOfoption3;$m++){
+                        dump($option1vals[$j] . "-" .$option2vals[$k]. "-" .$option3vals[$m]);
+                        
+                        $qty = $faker->numberBetween(10,50);            
+                        $fullfilment_service = 'manual';
+                        $vprice = $faker->numberBetween($min = 100, $max = 600);
+                        $src = "https://picsum.photos/300/300";
+
+
+                        fputcsv($handle, [
+                            $_handle,
+                            $title,
+                            $desc,
+                            $vendor,
+                            $type,
+                            $published,
+                            $option1,
+                            // $option1val,
+                            $option2,
+                            // $option2val,
+                            $option3,
+                            // $option3val,
+                            $qty,
+                            $fullfilment_service,
+                            $vprice,
+                            $vprice,
+                            $src,
+                            1,
+                            "active"
+                        ]);
+
+                    }
+                }
+            }
+            dd($nOfoption1,$nOfoption2,$nOfoption3);
             
-            $option3 = "Material";
-            $optin3vals = ["Plastic", "Rubber", "ceramic", "metal", "composites"];
-            $option3val = $optin3vals[array_rand($optin3vals,1)];
 
-            $qty = $faker->numberBetween(10,50);            
-            $fullfilment_service = 'manual';
-            $vprice = $faker->numberBetween($min = 100, $max = 600);
-            $src = "https://picsum.photos/300/300";
+            
 
 
-            fputcsv($handle, [
-                $_handle,
-                $title,
-                $desc,
-                $vendor,
-                $type,
-                $published,
-                $option1,
-                $option1val,
-                $option2,
-                $option2val,
-                $option3,
-                $option3val,
-                $qty,
-                $fullfilment_service,
-                $vprice,
-                $vprice,
-                $src,
-                1,
-                "active"
-            ]);
-
+            
         }
-        fclose($handle);
+        // fclose($handle);
 
         //download command
-        return Response::download($filename, "download.csv", $headers);
+        // return Response::download($filename, "download.csv", $headers);
+        echo "Done";
     }
 }
